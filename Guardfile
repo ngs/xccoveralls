@@ -9,6 +9,6 @@ guard :rspec, cmd: 'bundle exec rspec' do
 end
 
 guard :rubocop do
-  watch %r{^spec/(.*)_spec.rb$x/}
+  watch %r{^spec/(.*)_spec.rb$}
   watch %r{^lib/(.*).rb$}
 end
