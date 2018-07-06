@@ -4,13 +4,14 @@ require 'spec_helper'
 
 describe Xccoveralls::Xccov do
   before do
-    `touch #{derived_data_path}/Logs/Test/96C6195A-E7C3-4B17-A344-2EFFE95ACCB2.xccovarchive 2> /dev/null`
+    `touch #{derived_data_path}/Logs/Test/main.xccovarchive 2> /dev/null`
   end
 
   let(:options) do
     {
       derived_data_path: derived_data_path,
-      source_path: source_path
+      source_path: source_path,
+      ignorefile_path: ignorefile_path
     }
   end
   let(:derived_data_path) do
@@ -18,6 +19,9 @@ describe Xccoveralls::Xccov do
   end
   let(:source_path) do
     File.join File.dirname(File.dirname(__FILE__)), 'fixtures', 'Sources'
+  end
+  let(:ignorefile_path) do
+    File.join File.dirname(File.dirname(__FILE__)), 'fixtures', 'Sources', 'coverallsignore'
   end
 
   let(:instance) { described_class.new(options) }
@@ -34,7 +38,7 @@ describe Xccoveralls::Xccov do
       it { is_expected.to eq "#{derived_data_path}/Logs/Test/fake.xccovarchive" }
     end
     context 'otherwise' do
-      it { is_expected.to eq "#{derived_data_path}/Logs/Test/96C6195A-E7C3-4B17-A344-2EFFE95ACCB2.xccovarchive" }
+      it { is_expected.to eq "#{derived_data_path}/Logs/Test/main.xccovarchive" }
     end
     context 'when archive not found' do
       let(:derived_data_path) do
@@ -49,21 +53,36 @@ describe Xccoveralls::Xccov do
     end
   end
 
-  describe 'files' do
-    subject { instance.files }
-    it { is_expected.to have(100).items }
+  describe 'file_paths' do
+    subject { instance.file_paths }
+    it do
+      is_expected.to eq [
+        '/Users/ngs/src/ci2go/CI2Go/Data/Build.swift',
+        '/Users/ngs/src/ci2go/CI2Go/Data/Project.swift'
+      ]
+    end
   end
 
   describe 'coverage' do
     subject { instance.coverage(path) }
-    let(:path) { '/Users/ngs/src/ci2go/CI2Go/AppDelegate.swift' }
-    it { is_expected.to have(74).items }
+    let(:path) { '/Users/ngs/src/ci2go/CI2Go/Data/Project.swift' }
+    it do
+      is_expected.to eq [
+        nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil,
+        nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil,
+        nil, nil, nil, 95, 95, 95, 95, 95, 95, nil, nil, 95, 95, nil, nil,
+        95, 95, nil, nil, 95, 95, nil, nil, 95, nil, 4, 4, 4, 4, 4, 4, 4,
+        nil, 30, 30, 30, 30, 30, 30, 30, 30, 30, nil, 2, 2, 2, 2, 2, 2, 2,
+        nil, nil, 0, 2, nil, nil, 2, 2, nil, 79, 79, 79, nil, 79, 79, 79,
+        nil, 0, 0, 0, nil, nil, nil, 4, 4, 4
+      ]
+    end
     context 'when path does not exist' do
-      let(:path) { '/Users/ngs/src/ci2go/CI2Go/AppDelegate.mm' }
+      let(:path) { '/Users/ngs/src/ci2go/Vendor/ANSIEscapeHelper/AMR_ANSIEscapeHelper.m' }
       it do
         expect { subject }.to raise_error(
           FastlaneCore::Interface::FastlaneError,
-          'No coverage data for /Users/ngs/src/ci2go/CI2Go/AppDelegate.mm'
+          'No coverage data for /Users/ngs/src/ci2go/Vendor/ANSIEscapeHelper/AMR_ANSIEscapeHelper.m'
         )
       end
     end

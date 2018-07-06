@@ -1,14 +1,20 @@
 require 'fastlane_core'
-require 'buff/ignore'
+require 'xccoveralls/ignorefile'
 
 module Xccoveralls
   class Xccov
     attr_reader :source_path
     attr_reader :derived_data_path
+    attr_reader :ignorefile_path
 
-    def initialize(derived_data_path: nil, source_path: nil)
+    def initialize(
+      derived_data_path: nil,
+      source_path: nil,
+      ignorefile_path: nil
+    )
       @source_path = source_path
       @derived_data_path = derived_data_path
+      @ignorefile_path = ignorefile_path
     end
 
     def test_logs_path
@@ -27,9 +33,9 @@ module Xccoveralls
     end
 
     def coverage(path)
-      files.include?(path) ||
+      file_paths.include?(path) ||
         user_error!("No coverage data for #{path}")
-      res = exec(['--file', path])
+      res = exec(['--file', "'#{path}'"])
       res.split("\n").map do |line|
         line = line.strip.split(/[\s:]/).reject(&:empty?)
         next unless line[0] =~ /^\d+$/
@@ -38,12 +44,18 @@ module Xccoveralls
       end
     end
 
-    def files
-      @files ||= exec(%w[--file-list]).split("\n")
+    def file_paths
+      return @file_paths if @file_paths
+      paths = exec(%w[--file-list]).split("\n")
+      if ignorefile_path && File.file?(ignorefile_path)
+        ignore = Ignorefile.new(ignorefile_path)
+        ignore.apply!(paths)
+      end
+      @file_paths = paths
     end
 
     def exec(args)
-      cmd = %w[xcrun xccov view] + args + [archive_path]
+      cmd = %w[xcrun xccov view] + args + ["'#{archive_path}'"]
       FastlaneCore::CommandExecutor.execute(command: cmd.join(' ')).strip
     end
 
