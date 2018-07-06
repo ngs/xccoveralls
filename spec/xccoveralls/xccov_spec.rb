@@ -88,7 +88,7 @@ describe Xccoveralls::Xccov do
     end
   end
 
-  describe 'hash' do
+  describe 'source_digest' do
     before do
       allow(instance).to receive(:file_paths).and_return [
         "#{source_path}/Data/Build.swift",
@@ -96,7 +96,7 @@ describe Xccoveralls::Xccov do
         "#{source_path}/View Controllers/BuildsViewController.swift"
       ]
     end
-    subject { instance.hash path }
+    subject { instance.source_digest path }
     let(:path) { "#{source_path}/View Controllers/BuildsViewController.swift" }
     it { is_expected.to eq '12978beca5d66aa364d2d8469b86eb1105206dcd' }
     context 'when path does not exist' do
@@ -107,6 +107,58 @@ describe Xccoveralls::Xccov do
           "File at #{path} does not exist"
         )
       end
+    end
+  end
+
+  describe 'name' do
+    before do
+      allow(instance).to receive(:file_paths).and_return [
+        "#{source_path}/Data/Build.swift",
+        "#{source_path}/Data/Project.swift",
+        "#{source_path}/View Controllers/BuildsViewController.swift"
+      ]
+    end
+    subject { instance.name path }
+    let(:path) { "#{source_path}/View Controllers/BuildsViewController.swift" }
+    it { is_expected.to eq 'View Controllers/BuildsViewController.swift' }
+    context 'when path is outside of source path' do
+      let(:path) { '/etc/hosts' }
+      it { is_expected.to eq '/etc/hosts' }
+    end
+  end
+
+  describe 'to_json' do
+    before do
+      allow(instance).to receive(:file_paths).and_return [
+        "#{source_path}/Data/Build.swift",
+        "#{source_path}/Data/Project.swift",
+        "#{source_path}/View Controllers/BuildsViewController.swift"
+      ]
+      allow(instance).to receive(:coverage).and_return [
+        nil, 2, nil, 0
+      ]
+    end
+    subject { instance.to_json }
+    it do
+      is_expected.to eq(
+        source_files: [
+          {
+            name: 'Data/Build.swift',
+            source_digest: 'fc933b483f4a7deaab58a72f899278f4295b5b3f',
+            coverage: [nil, 2, nil, 0]
+          },
+          {
+            name: 'Data/Project.swift',
+            source_digest: '28262ad52976daf0690133ff404f32c22a6ee451',
+            coverage: [nil, 2, nil, 0]
+          },
+          {
+            name: 'View Controllers/BuildsViewController.swift',
+            source_digest: '12978beca5d66aa364d2d8469b86eb1105206dcd',
+            coverage: [nil, 2, nil, 0]
+          }
+        ]
+      )
     end
   end
 end

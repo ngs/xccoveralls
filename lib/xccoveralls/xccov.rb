@@ -44,11 +44,35 @@ module Xccoveralls
       end
     end
 
-    def hash(path)
+    def source_digest(path)
       File.file?(path) ||
         user_error!("File at #{path} does not exist")
       cmd = %w[git hash-object] + %W["#{path}"]
       FastlaneCore::CommandExecutor.execute(command: cmd.join(' ')).strip
+    end
+
+    def name(path)
+      path.start_with?(source_path) || (return path)
+      Pathname.new(path).relative_path_from(
+        Pathname.new(source_path)
+      ).to_s
+    end
+
+    # http://docs.coveralls.io/api-introduction#source-files
+    def file(path)
+      {
+        name: name(path),
+        source_digest: source_digest(path),
+        coverage: coverage(path)
+      }
+    end
+
+    def files
+      file_paths.map { |path| file(path) }
+    end
+
+    def to_json
+      { source_files: files }
     end
 
     def file_paths
