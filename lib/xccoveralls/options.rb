@@ -2,7 +2,7 @@ require 'fastlane_core'
 
 module Xccoveralls
   class Options
-    def self.available_options # rubocop:disable Metrics/MethodLength, Metrics/LineLength, Metrics/AbcSize
+    def self.available_options # rubocop:disable Metrics/MethodLength, Metrics/LineLength, Metrics/AbcSize, Metrics/CyclomaticComplexity
       root_path = `git rev-parse --show-toplevel`.strip
       [
         FastlaneCore::ConfigItem.new(
@@ -34,6 +34,28 @@ module Xccoveralls
             File.directory?(v) ||
               user_error!("Source path #{v} is not a directory")
           end
+        ),
+        FastlaneCore::ConfigItem.new(
+          key: :ignorefile_path,
+          short_option: '-i',
+          optional: true,
+          env_name: 'XCCOVERALLS_IGNOREFILE_PATH',
+          description: 'Path to Ignorefile',
+          default_value: "#{root_path}/.coverallsignore",
+          verify_block: proc do |value|
+            v = File.expand_path(value.to_s)
+            File.exist?(v) ||
+              user_error!("Ignorefile does not exist at #{v}")
+            File.file?(v) ||
+              user_error!("#{v} is not a file")
+          end
+        ),
+        FastlaneCore::ConfigItem.new(
+          key: :repo_token,
+          short_option: '-t',
+          optional: true,
+          env_name: 'XCCOVERALLS_REPO_TOKEN',
+          description: 'Coveralls secret repo token'
         )
       ]
     end
