@@ -44,6 +44,13 @@ module Xccoveralls
       end
     end
 
+    def hash(path)
+      File.file?(path) ||
+        user_error!("File at #{path} does not exist")
+      cmd = %w[git hash-object] + %W["#{path}"]
+      FastlaneCore::CommandExecutor.execute(command: cmd.join(' ')).strip
+    end
+
     def file_paths
       return @file_paths if @file_paths
       paths = exec(%w[--file-list]).split("\n")
@@ -55,7 +62,7 @@ module Xccoveralls
     end
 
     def exec(args)
-      cmd = %w[xcrun xccov view] + args + ["'#{archive_path}'"]
+      cmd = %w[xcrun xccov view] + args + %W["#{archive_path}"]
       FastlaneCore::CommandExecutor.execute(command: cmd.join(' ')).strip
     end
 

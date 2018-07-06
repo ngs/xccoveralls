@@ -3,6 +3,7 @@ PROJECT_ROOT_PATH = File.dirname(File.dirname(__FILE__))
 require 'rubygems'
 require 'rspec/collection_matchers'
 require 'rspec/its'
+require 'rspec/mocks'
 require 'coveralls'
 require 'simplecov'
 

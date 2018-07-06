@@ -87,5 +87,27 @@ describe Xccoveralls::Xccov do
       end
     end
   end
+
+  describe 'hash' do
+    before do
+      allow(instance).to receive(:file_paths).and_return [
+        "#{source_path}/Data/Build.swift",
+        "#{source_path}/Data/Project.swift",
+        "#{source_path}/View Controllers/BuildsViewController.swift"
+      ]
+    end
+    subject { instance.hash path }
+    let(:path) { "#{source_path}/View Controllers/BuildsViewController.swift" }
+    it { is_expected.to eq '12978beca5d66aa364d2d8469b86eb1105206dcd' }
+    context 'when path does not exist' do
+      let(:path) { "#{source_path}/View Controllers/NothingViewController.swift" }
+      it do
+        expect { subject }.to raise_error(
+          FastlaneCore::Interface::FastlaneError,
+          "File at #{path} does not exist"
+        )
+      end
+    end
+  end
 end
 # rubocop:enable Metrics/LineLength, Metrics/BlockLength

@@ -2,7 +2,7 @@ lib = File.expand_path('lib', __dir__)
 $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
 require 'xccoveralls/version'
 
-Gem::Specification.new do |spec|
+Gem::Specification.new do |spec| # rubocop:disable Metrics/BlockLength
   spec.name          = 'xccoveralls'
   spec.version       = Xccoveralls::VERSION
   spec.authors       = ['Atsushi Nagase']
@@ -31,6 +31,7 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency 'rspec'
   spec.add_development_dependency 'rspec-collection_matchers'
   spec.add_development_dependency 'rspec-its'
+  spec.add_development_dependency 'rspec-mocks'
   spec.add_development_dependency 'rubocop'
   spec.add_development_dependency 'simplecov'
 end
