@@ -1,27 +1,29 @@
 version: 2
 references:
   test: &test
+    environment:
+      LC_ALL: en_US.UTF-8
+      LANG: en_US.UTF-8
+      SPEC_OPTS: '--format documentation --format RspecJunitFormatter --out test_report.xml'
     steps:
       - checkout
       - restore_cache:
           key: 1-bundler-{{ checksum "xccoveralls.gemspec" }}
-      - run:
-          name: Bundle Install
-          command: bundle install --path vendor/bundler
+      - run: bundle install --path vendor/bundler
       - save_cache:
           key: 1-bundler-{{ checksum "xccoveralls.gemspec" }}
           paths:
             - vendor/bundler
-      - run:
-          name: Run RSpec
-          command: |
-            bundle exec rspec \
-              --format documentation \
-              --format RspecJunitFormatter --out test_report.xml
+      - run: bundle exec rake rubocop
+      - run: bundle exec rake spec
+      - run: bundle exec rake coveralls:push
+      - run: bundle exec rake build
       - store_test_results:
           path: coverage
       - store_artifacts:
           path: result.xml
+      - store_artifacts:
+          path: pkg
 
 jobs:
   test-9.4.0:
