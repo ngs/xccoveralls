@@ -3,10 +3,6 @@ require 'spec_helper'
 # rubocop:disable Metrics/LineLength, Metrics/BlockLength
 
 describe Xccoveralls::Xccov do
-  before do
-    `touch #{derived_data_path}/Logs/Test/main.xccovarchive 2> /dev/null`
-  end
-
   let(:options) do
     {
       derived_data_path: derived_data_path,
@@ -38,6 +34,7 @@ describe Xccoveralls::Xccov do
       it { is_expected.to eq "#{derived_data_path}/Logs/Test/fake.xccovarchive" }
     end
     context 'otherwise' do
+      before { `touch #{derived_data_path}/Logs/Test/main.xccovarchive` }
       it { is_expected.to eq "#{derived_data_path}/Logs/Test/main.xccovarchive" }
     end
     context 'when archive not found' do

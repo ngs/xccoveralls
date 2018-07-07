@@ -3,7 +3,7 @@ $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
 require 'xccoveralls/version'
 
 Gem::Specification.new do |spec| # rubocop:disable Metrics/BlockLength
-  spec.name          = 'xccoveralls'
+  spec.name          = Xccoveralls::NAME
   spec.version       = Xccoveralls::VERSION
   spec.authors       = ['Atsushi Nagase']
   spec.email         = ['a@ngs.io']
