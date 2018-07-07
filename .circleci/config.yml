@@ -4,7 +4,7 @@ references:
     environment:
       LC_ALL: en_US.UTF-8
       LANG: en_US.UTF-8
-      SPEC_OPTS: '--format documentation --format RspecJunitFormatter --out test_report.xml'
+      SPEC_OPTS: '--format documentation --format RspecJunitFormatter --out test_output/result.xml'
     steps:
       - checkout
       - restore_cache:
@@ -19,9 +19,9 @@ references:
       - run: bundle exec rake coveralls:push
       - run: bundle exec rake build
       - store_test_results:
-          path: coverage
+          path: test_output
       - store_artifacts:
-          path: result.xml
+          path: coverage
       - store_artifacts:
           path: pkg
 
