@@ -43,6 +43,19 @@ jobs:
       xcode: '9.3.0'
     <<: *test
 
+  release:
+    docker:
+      - image: circleci/ruby:2
+    steps:
+      - checkout
+      - run: gem build xccoveralls.gemspec
+      - run: .circleci/check-tag.sh
+      - run: .circleci/export-api-key.sh
+      - run: gem push xccoveralls*.gem
+      - store_artifacts:
+          path: xccoveralls*.gem
+          destination:
+
 workflows:
   version: 2
   tests:
@@ -50,3 +63,9 @@ workflows:
       - test-9.4.0
       - test-9.3.1
       - test-9.3.0
+  release:
+    jobs:
+      - release:
+          filters:
+            tags:
+              only: /^v[0-9]+\.[0-9]+\.[0-9]+$/
