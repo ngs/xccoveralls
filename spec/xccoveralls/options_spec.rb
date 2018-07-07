@@ -3,13 +3,16 @@ require 'spec_helper'
 # rubocop:disable Metrics/LineLength
 
 shared_examples_for 'validates directory' do
-  subject { -> { option.verify!(path) } }
+  subject do
+    allow(FastlaneCore::UI).to receive(:user_error!)
+    option.verify!(path)
+    FastlaneCore::UI
+  end
 
   context 'path does not exist' do
     let(:path) { '/foo' }
     it do
-      is_expected.to raise_error(
-        FastlaneCore::Interface::FastlaneError,
+      is_expected.to have_received(:user_error!).with(
         'Source path /foo does not exist'
       )
     end
@@ -18,8 +21,7 @@ shared_examples_for 'validates directory' do
   context 'path is a file' do
     let(:path) { __FILE__ }
     it do
-      is_expected.to raise_error(
-        FastlaneCore::Interface::FastlaneError,
+      is_expected.to have_received(:user_error!).with(
         %r{^Source path /.+/spec/xccoveralls/options_spec\.rb is not a directory$}
       )
     end
@@ -27,18 +29,21 @@ shared_examples_for 'validates directory' do
 
   context 'path is a directory' do
     let(:path) { '/Library' }
-    it { is_expected.not_to raise_error }
+    it { is_expected.not_to have_received(:user_error!) }
   end
 end
 
 shared_examples_for 'validates file' do
-  subject { -> { option.verify!(path) } }
+  subject do
+    allow(FastlaneCore::UI).to receive(:user_error!)
+    option.verify!(path)
+    FastlaneCore::UI
+  end
 
   context 'path does not exist' do
     let(:path) { '/foo' }
     it do
-      is_expected.to raise_error(
-        FastlaneCore::Interface::FastlaneError,
+      is_expected.to have_received(:user_error!).with(
         'Ignorefile does not exist at /foo'
       )
     end
@@ -47,8 +52,7 @@ shared_examples_for 'validates file' do
   context 'path is a directory' do
     let(:path) { '/Library' }
     it do
-      is_expected.to raise_error(
-        FastlaneCore::Interface::FastlaneError,
+      is_expected.to have_received(:user_error!).with(
         '/Library is not a file'
       )
     end
@@ -56,7 +60,7 @@ shared_examples_for 'validates file' do
 
   context 'path is a file' do
     let(:path) { __FILE__ }
-    it { is_expected.not_to raise_error }
+    it { is_expected.not_to have_received(:user_error!) }
   end
 end
 
@@ -94,10 +98,7 @@ describe Xccoveralls::Options do # rubocop:disable Metrics/BlockLength
 
   describe 'ignorefile_path' do
     let(:key) { :ignorefile_path }
-    it_behaves_like(
-      'validates default value',
-      %r{/.coverallsignore$}
-    )
+    its(:default_value) { is_expected.to be_nil }
     it_behaves_like 'validates file'
   end
 end

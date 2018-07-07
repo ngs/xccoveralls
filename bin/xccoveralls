@@ -1,0 +1,7 @@
+#!/usr/bin/env ruby
+# vim ft=ruby
+$LOAD_PATH.push File.expand_path('../lib', __dir__)
+
+require 'xccoveralls'
+require 'xccoveralls/command'
+Xccoveralls::Command.run!

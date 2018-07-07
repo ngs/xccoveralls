@@ -1,12 +1,22 @@
 require 'spec_helper'
 
-describe Xccoveralls::Manager do # rubocop:disable Metrics/BlockLength
+describe Xccoveralls::Runner do # rubocop:disable Metrics/BlockLength
   before(:each) do
     allow(Coveralls::API).to receive(:post_json)
-    allow(instance.xccov).to receive(:json).and_return json
+    allow(instance.xccov).to receive(:to_json).and_return json
   end
   let(:options) do
-    { repo_token: 'asdf' }
+    {
+      repo_token: 'asdf',
+      derived_data_path: derived_data_path,
+      source_path: source_path
+    }
+  end
+  let(:derived_data_path) do
+    File.join File.dirname(File.dirname(__FILE__)), 'fixtures', 'DerivedData'
+  end
+  let(:source_path) do
+    File.join File.dirname(File.dirname(__FILE__)), 'fixtures', 'Sources'
   end
   let(:json) do
     {

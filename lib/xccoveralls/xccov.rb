@@ -14,7 +14,9 @@ module Xccoveralls
     )
       @source_path = source_path
       @derived_data_path = derived_data_path
-      @ignorefile_path = ignorefile_path
+      @ignorefile_path = ignorefile_path || File.join(
+        source_path, '.coverallsignore'
+      )
     end
 
     def test_logs_path
@@ -47,8 +49,10 @@ module Xccoveralls
     def source_digest(path)
       File.file?(path) ||
         user_error!("File at #{path} does not exist")
-      cmd = %w[git hash-object] + %W["#{path}"]
-      FastlaneCore::CommandExecutor.execute(command: cmd.join(' ')).strip
+      FastlaneCore::CommandExecutor.execute(
+        command: %w[git hash-object] + %W["#{path}"],
+        print_command: false
+      ).strip
     end
 
     def name(path)
@@ -78,7 +82,7 @@ module Xccoveralls
     def file_paths
       return @file_paths if @file_paths
       paths = exec(%w[--file-list]).split("\n")
-      if ignorefile_path && File.file?(ignorefile_path)
+      if File.file?(ignorefile_path)
         ignore = Ignorefile.new(ignorefile_path)
         ignore.apply!(paths)
       end
@@ -87,7 +91,10 @@ module Xccoveralls
 
     def exec(args)
       cmd = %w[xcrun xccov view] + args + %W["#{archive_path}"]
-      FastlaneCore::CommandExecutor.execute(command: cmd.join(' ')).strip
+      FastlaneCore::CommandExecutor.execute(
+        command: cmd,
+        print_command: false
+      ).strip
     end
 
     private_class_method

@@ -1,9 +1,9 @@
 require 'fastlane_core'
 require 'xccoveralls/xccov'
-require 'coveralls/api'
+require 'coveralls'
 
 module Xccoveralls
-  class Manager
+  class Runner
     attr_reader :repo_token
     attr_reader :xccov
     attr_reader :coveralls_configuration
@@ -29,7 +29,7 @@ module Xccoveralls
       org_repo_token = ENV['COVERALLS_REPO_TOKEN']
       ENV['COVERALLS_REPO_TOKEN'] = repo_token || org_repo_token
       @coveralls_configuration = Coveralls::Configuration.configuration
-      Coveralls::API.post_json 'jobs', xccov.json
+      Coveralls::API.post_json 'jobs', xccov.to_json
       ENV['COVERALLS_REPO_TOKEN'] = org_repo_token
     end
   end
