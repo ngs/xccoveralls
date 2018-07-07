@@ -32,6 +32,7 @@ Gem::Specification.new do |spec| # rubocop:disable Metrics/BlockLength
   spec.add_development_dependency 'rspec-collection_matchers'
   spec.add_development_dependency 'rspec-its'
   spec.add_development_dependency 'rspec-mocks'
+  spec.add_development_dependency 'rspec_junit_formatter'
   spec.add_development_dependency 'rubocop'
   spec.add_development_dependency 'simplecov'
 end
