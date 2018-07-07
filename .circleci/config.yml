@@ -22,8 +22,10 @@ references:
           path: test_output
       - store_artifacts:
           path: coverage
+          destination: coverage
       - store_artifacts:
           path: pkg
+          destination: pkg
 
 jobs:
   test-9.4.0:
