@@ -12,7 +12,7 @@ Gem::Specification.new do |spec| # rubocop:disable Metrics/BlockLength
   spec.homepage      = 'https://github.com/ngs/xccoveralls'
   spec.license       = 'MIT'
 
-  spec.required_ruby_version = '>= 2.1.0'
+  spec.required_ruby_version = '>= 2.0.0'
 
   spec.files = Dir['lib/**/*'] + %w[bin/xccoveralls README.md LICENSE]
 
@@ -33,6 +33,6 @@ Gem::Specification.new do |spec| # rubocop:disable Metrics/BlockLength
   spec.add_development_dependency 'rspec-its'
   spec.add_development_dependency 'rspec-mocks'
   spec.add_development_dependency 'rspec_junit_formatter'
-  spec.add_development_dependency 'rubocop'
+  spec.add_development_dependency 'rubocop', '0.49'
   spec.add_development_dependency 'simplecov'
 end
