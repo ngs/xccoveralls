@@ -26,7 +26,7 @@ module Xccoveralls
     def archive_path
       return @archive_path if @archive_path
       ext = '.xccovarchive'
-      files = Dir[File.join(test_logs_path, "*#{ext}")]
+      files = Dir[File.join(test_logs_path, "**/*#{ext}")]
       @archive_path = files.sort_by { |filename| File.mtime(filename) }
                            .reverse.first
       @archive_path ||
